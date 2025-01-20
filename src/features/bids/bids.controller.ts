@@ -1,0 +1,49 @@
+import { Request, Response } from "express";
+import { AuctionItem } from "../../models/auction-item.model";
+import { Bid } from "../../models/bid.model";
+import { startSession } from "mongoose";
+
+export const createBid = async (req: Request, res: Response) => {
+  const { auctionItemId, amount } = req.body;
+
+  try {
+    const auctionItem = await AuctionItem.findById(auctionItemId);
+
+    if (!auctionItem) {
+      res.status(404).json({ message: "Auction not found" });
+      return;
+    }
+
+    const userId = req.userId;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized access" });
+      return;
+    }
+    const session = await startSession();
+
+    const bidId = await session.withTransaction(async () => {
+      const bid = new Bid({
+        amount,
+        auctionItem: auctionItemId,
+        user: userId,
+      });
+
+      await AuctionItem.updateOne(
+        { _id: auctionItem._id },
+        { $push: { bidHistory: bid._id } }
+      );
+
+      const createdBid = await bid.save();
+
+      return createdBid._id.toString();
+    });
+
+    res.status(201).json({
+      message: "Bid created successfully",
+      bidId,
+    });
+  } catch {
+    res.status(500).json({ message: "Failed to create bid" });
+  }
+};
