@@ -1,9 +1,10 @@
+import { startSession } from "mongoose";
 import { Request, Response } from "express";
-import { AuctionItem, IAuctionItem } from "../../models/auction-item.model";
-import { Auction } from "../../models/auction.model";
-import { IBid } from "../../models/bid.model";
-import { HydratedDocument, startSession } from "mongoose";
-import { UserDocument } from "../../models/user.model";
+
+import { Auction } from "@/models/auction.model";
+import { BidDocument } from "@/models/bid.model";
+import { UserDocument } from "@/models/user.model";
+import { AuctionItem, AuctionItemDocument } from "@/models/auction-item.model";
 
 export const createAuctionWithItems = async (req: Request, res: Response) => {
   const { title, items } = req.body;
@@ -95,18 +96,16 @@ export const getAuctionById = async (req: Request, res: Response) => {
         id: createdBy._id.toString(),
         username: createdBy.username,
       },
-      items: (auction.items as unknown as HydratedDocument<IAuctionItem>[]).map(
-        (item) => {
-          return {
-            id: item._id.toString(),
-            title: item.title,
-            startPrice: item.startPrice,
-            startTime: item.startTime,
-            endTime: item.endTime,
-            currentBid: item.currentBid,
-            bidHistory: (
-              item.bidHistory as unknown as HydratedDocument<IBid>[]
-            ).map((bid) => {
+      items: (auction.items as unknown as AuctionItemDocument[]).map((item) => {
+        return {
+          id: item._id.toString(),
+          title: item.title,
+          startPrice: item.startPrice,
+          startTime: item.startTime,
+          endTime: item.endTime,
+          currentBid: item.currentBid,
+          bidHistory: (item.bidHistory as unknown as BidDocument[]).map(
+            (bid) => {
               const user = bid.user as unknown as UserDocument;
               return {
                 amount: bid.amount,
@@ -116,10 +115,10 @@ export const getAuctionById = async (req: Request, res: Response) => {
                   username: user.username,
                 },
               };
-            }),
-          };
-        }
-      ),
+            }
+          ),
+        };
+      }),
     };
 
     res.status(200).json({ auction: responseData });

@@ -21,6 +21,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
 
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     "types": [
       "./src/shared/types/environment.d.ts",
       "./src/shared/types/express.d.ts"

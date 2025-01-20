@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { HydratedDocument, Schema, model } from "mongoose";
 
 export interface IBid {
   amount: number;
@@ -6,6 +6,8 @@ export interface IBid {
   user: Schema.Types.ObjectId;
   timestamp: Date;
 }
+
+export type BidDocument = HydratedDocument<IBid>;
 
 const bidSchema = new Schema<IBid>({
   amount: {

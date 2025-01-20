@@ -1,7 +1,8 @@
-import { Request, Response } from "express";
-import { AuctionItem } from "../../models/auction-item.model";
-import { Bid } from "../../models/bid.model";
 import { startSession } from "mongoose";
+import { Request, Response } from "express";
+
+import { Bid } from "@/models/bid.model";
+import { AuctionItem } from "@/models/auction-item.model";
 
 export const createBid = async (req: Request, res: Response) => {
   const { auctionItemId, amount } = req.body;

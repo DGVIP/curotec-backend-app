@@ -1,7 +1,8 @@
 import { Router } from "express";
 
+import { authenticate } from "@/middleware/authenticate";
+
 import { createBid } from "./bids.controller";
-import { authenticate } from "../../middleware/authenticate";
 
 export const bidsRouter = Router();
 
