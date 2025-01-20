@@ -20,6 +20,12 @@ export const createBid = async (req: Request, res: Response) => {
       res.status(401).json({ message: "Unauthorized access" });
       return;
     }
+
+    if (auctionItem.createdBy.toString() === userId) {
+      res.status(400).json({ message: "You cannot bid on your own auction" });
+      return;
+    }
+
     const session = await startSession();
 
     const bidId = await session.withTransaction(async () => {
@@ -29,12 +35,12 @@ export const createBid = async (req: Request, res: Response) => {
         user: userId,
       });
 
+      const createdBid = await bid.save();
+
       await AuctionItem.updateOne(
         { _id: auctionItem._id },
         { $push: { bidHistory: bid._id } }
       );
-
-      const createdBid = await bid.save();
 
       return createdBid._id.toString();
     });
