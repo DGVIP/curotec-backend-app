@@ -153,3 +153,39 @@ export const getAuctionList = async (_req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to fetch auction list" });
   }
 };
+
+export const getAuctionsFromCurrentUser = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const userId = req.userId;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized access" });
+      return;
+    }
+
+    const auctions = await Auction.find({ createdBy: userId })
+      .populate("createdBy")
+      .sort({ timestamp: "descending" })
+      .exec();
+
+    const responseData = auctions.map((auction) => {
+      const createdBy = auction.createdBy as unknown as UserDocument;
+      return {
+        id: auction._id.toString(),
+        title: auction.title,
+        timestamp: auction.timestamp.toISOString(),
+        createdBy: {
+          id: createdBy._id.toString(),
+          username: createdBy.username,
+        },
+      };
+    });
+
+    res.status(200).json({ auctions: responseData });
+  } catch {
+    res.status(500).json({ message: "Failed to fetch auction list" });
+  }
+};
