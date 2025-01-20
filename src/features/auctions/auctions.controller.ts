@@ -185,7 +185,8 @@ export const getAuctionsFromCurrentUser = async (
     });
 
     res.status(200).json({ auctions: responseData });
-  } catch {
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Failed to fetch auction list" });
   }
 };

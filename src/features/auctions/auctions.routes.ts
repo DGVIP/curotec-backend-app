@@ -11,8 +11,8 @@ export const auctionsRouter = Router();
 
 auctionsRouter.post("/", authenticate, createAuctionWithItems);
 
-auctionsRouter.get("/:auctionId", authenticate, getAuctionById);
-
 auctionsRouter.get("/", authenticate, getAuctionList);
 
 auctionsRouter.get("/current", authenticate, getAuctionsFromCurrentUser);
+
+auctionsRouter.get("/:auctionId", authenticate, getAuctionById);
