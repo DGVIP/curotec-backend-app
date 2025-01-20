@@ -31,6 +31,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.7",
     "nodemon": "^3.1.9",
+    "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   }
